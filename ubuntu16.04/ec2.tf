@@ -8,3 +8,7 @@ resource "aws_instance" "ubuntu" {
   vpc_security_group_ids = ["sg-5a03023f"]
   key_name = "default"
 }
+
+output "ssh" {
+  value = "ssh -i ~/.ssh/ec2_default.pem ubuntu@${aws_instance.ubuntu.public_ip}"
+}
