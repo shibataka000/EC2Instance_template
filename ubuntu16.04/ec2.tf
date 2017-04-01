@@ -7,6 +7,7 @@ resource "aws_instance" "ubuntu" {
   instance_type = "t2.micro"
   vpc_security_group_ids = ["sg-5a03023f"]
   key_name = "default"
+  user_data = "${file("cloud-init.sh")}"
 }
 
 output "ssh" {
