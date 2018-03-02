@@ -24,5 +24,5 @@ resource "aws_instance" "ubuntu_16_04" {
 }
 
 output "ssh" {
-  value = "ssh -i ~/.ssh/ec2_default.pem ubuntu@${aws_instance.ubuntu_16_04.public_ip}"
+  value = "ssh ubuntu@${aws_instance.ubuntu_16_04.public_dns}"
 }
