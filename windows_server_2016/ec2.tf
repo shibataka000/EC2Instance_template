@@ -2,6 +2,14 @@ provider "aws" {
   region = "ap-northeast-1"
 }
 
+terraform {
+  backend "s3" {
+    bucket = "sbtk-tfstate"
+    key = "terraform-template/windows-server-2016/windows-server-2016.tfstate"
+    region = "ap-northeast-1"
+  }
+}
+
 data "aws_ami" "windows_server_2016" {
   most_recent = true
   owners = ["amazon"]
