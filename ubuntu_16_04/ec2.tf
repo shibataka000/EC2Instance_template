@@ -28,7 +28,15 @@ resource "aws_instance" "ubuntu_16_04" {
   vpc_security_group_ids = ["${data.aws_security_group.default.id}"]
   instance_type = "t2.micro"
   key_name = "default"
-  user_data = "${file("cloud-init.sh")}"
+
+  connection {
+    type = "ssh"
+    user = "ubuntu"
+    private_key = "${file("~/.ssh/aws_default")}"
+  }
+  provisioner "remote-exec" {
+    script = "./cloud-init.sh"
+  }
 }
 
 output "ssh" {
