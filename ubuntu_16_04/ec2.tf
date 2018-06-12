@@ -2,6 +2,14 @@ provider "aws" {
   region = "ap-northeast-1"
 }
 
+terraform {
+  backend "s3" {
+    bucket = "sbtk-tfstate"
+    key = "terraform-template/ubuntu-16-04/ubuntu-16-04.tfstate"
+    region = "ap-northeast-1"
+  }
+}
+
 data "aws_ami" "ubuntu_16_04" {
   most_recent = true
   owners = ["099720109477"]
