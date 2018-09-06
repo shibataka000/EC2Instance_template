@@ -10,7 +10,7 @@ terraform {
   }
 }
 
-data "aws_ami" "windows_server_2016" {
+data "aws_ami" "windows_server" {
   most_recent = true
   owners = ["amazon"]
   filter {
@@ -23,17 +23,17 @@ data "aws_security_group" "default" {
   name = "default"
 }
 
-resource "aws_instance" "windows_server_2016" {
-  ami = "${data.aws_ami.windows_server_2016.image_id}"
+resource "aws_instance" "windows_server" {
+  ami = "${data.aws_ami.windows_server.image_id}"
   vpc_security_group_ids = ["${data.aws_security_group.default.id}"]
   instance_type = "t2.medium"
   key_name = "default"
 }
 
 output "instance_id" {
-  value = "${aws_instance.windows_server_2016.id}"
+  value = "${aws_instance.windows_server.id}"
 }
 
 output "public_dns" {
-  value = "${aws_instance.windows_server_2016.public_dns}"
+  value = "${aws_instance.windows_server.public_dns}"
 }
