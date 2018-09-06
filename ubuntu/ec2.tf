@@ -10,12 +10,12 @@ terraform {
   }
 }
 
-data "aws_ami" "ubuntu_16_04" {
+data "aws_ami" "ubuntu" {
   most_recent = true
   owners = ["099720109477"]
   filter {
     name = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-xenial-16.04-amd64-server-*"]
+    values = ["ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server-*"]
   }
 }
 
@@ -23,8 +23,8 @@ data "aws_security_group" "default" {
   name = "default"
 }
 
-resource "aws_instance" "ubuntu_16_04" {
-  ami = "${data.aws_ami.ubuntu_16_04.image_id}"
+resource "aws_instance" "ubuntu" {
+  ami = "${data.aws_ami.ubuntu.image_id}"
   vpc_security_group_ids = ["${data.aws_security_group.default.id}"]
   instance_type = "t2.micro"
   key_name = "default"
@@ -40,5 +40,5 @@ resource "aws_instance" "ubuntu_16_04" {
 }
 
 output "ssh" {
-  value = "ssh ubuntu@${aws_instance.ubuntu_16_04.public_dns}"
+  value = "ssh ubuntu@${aws_instance.ubuntu.public_dns}"
 }
