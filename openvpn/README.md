@@ -15,7 +15,7 @@ Configure security group and allow UDP 1194 port inbound traffic.
 Launch EC2 instance and download client key.
 
 ```
-sh setup.sh
+terraform apply
 ```
 
 ### Connect to VPN Server
@@ -37,7 +37,7 @@ After all, connect to VPN server and enjoy internet!
 After disconnect to VPN server, you can terminate VPN server.
 
 ```
-terraform destroy.
+terraform destroy
 ```
 
 ### Note

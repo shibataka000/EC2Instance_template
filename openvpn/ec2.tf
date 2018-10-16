@@ -2,7 +2,15 @@ provider "aws" {
   region = "ap-northeast-1"
 }
 
-data "aws_ami" "ubuntu_14_04" {
+terraform {
+  backend "s3" {
+    bucket = "sbtk-tfstate"
+    key = "terraform-template/openvpn/openvpn.tfstate"
+    region = "ap-northeast-1"
+  }
+}
+
+data "aws_ami" "ubuntu" {
   most_recent = true
   owners = ["099720109477"]
   filter {
@@ -11,22 +19,55 @@ data "aws_ami" "ubuntu_14_04" {
   }
 }
 
-data "aws_security_group" "default" {
-  name = "default"
-}
-
-resource "aws_instance" "openvpn_server" {
-  ami = "${data.aws_ami.ubuntu_14_04.image_id}"
-  vpc_security_group_ids = ["${data.aws_security_group.default.id}"]
+resource "aws_instance" "openvpn" {
+  ami = "${data.aws_ami.ubuntu.image_id}"
+  vpc_security_group_ids = ["${aws_security_group.openvpn.id}"]
   instance_type = "t2.micro"
   key_name = "default"
-  user_data = "${file("server/setup.sh")}"
+
+  connection {
+    type = "ssh"
+    user = "ubuntu"
+    private_key = "${file("${var.private_key}")}"
+  }
+  provisioner "file" {
+    source = "./server"
+    destination = "~/openvpn"
+  }
+  provisioner "remote-exec" {
+    inline = ["sudo bash ~/openvpn/setup.sh"]
+  }
+  provisioner "local-exec" {
+    command = "scp -i ${var.private_key} -o StrictHostKeyChecking=no ubuntu@${aws_instance.openvpn.public_ip}:/etc/openvpn/client/* ./client/"
+  }
 }
 
-output "public_ip" {
-  value = "${aws_instance.openvpn_server.public_ip}"
+resource "aws_security_group" "openvpn" {
+  name = "openvpn"
+  description = "openvpn"
+
+  ingress {
+    from_port = 22
+    to_port = 22
+    protocol = "tcp"
+    cidr_blocks = ["${var.client_ip}"]
+  }
+
+  ingress {
+    from_port = 1194
+    to_port = 1194
+    protocol = "udp"
+    cidr_blocks = ["${var.client_ip}"]
+  }
+
+  egress {
+    from_port = 0
+    to_port = 0
+    protocol = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 }
 
-output "instance_id" {
-  value = "${aws_instance.openvpn_server.id}"
+output "Gateway" {
+  value = "${aws_instance.openvpn.public_ip}"
 }
