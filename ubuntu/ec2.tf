@@ -5,7 +5,7 @@ provider "aws" {
 terraform {
   backend "s3" {
     bucket = "sbtk-tfstate"
-    key = "terraform-template/ubuntu-16-04/ubuntu-16-04.tfstate"
+    key = "terraform-template/ubuntu/ubuntu.tfstate"
     region = "ap-northeast-1"
   }
 }

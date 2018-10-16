@@ -5,7 +5,7 @@ provider "aws" {
 terraform {
   backend "s3" {
     bucket = "sbtk-tfstate"
-    key = "terraform-template/windows-server-2016/windows-server-2016.tfstate"
+    key = "terraform-template/windows-server/windows-server.tfstate"
     region = "ap-northeast-1"
   }
 }
