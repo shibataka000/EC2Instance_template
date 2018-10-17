@@ -28,6 +28,7 @@ resource "aws_instance" "windows_server" {
   vpc_security_group_ids = ["${aws_security_group.windows_server.id}"]
   instance_type = "t2.medium"
   key_name = "default"
+  get_password_data = true
 }
 
 resource "aws_security_group" "windows_server" {
@@ -49,10 +50,10 @@ resource "aws_security_group" "windows_server" {
   }
 }
 
-output "instance_id" {
-  value = "${aws_instance.windows_server.id}"
+output "server" {
+  value = "${aws_instance.windows_server.public_dns}"
 }
 
-output "public_dns" {
-  value = "${aws_instance.windows_server.public_dns}"
+output "password" {
+  value = "${rsadecrypt(aws_instance.windows_server.password_data, file("~/.ssh/aws_default"))}"
 }
