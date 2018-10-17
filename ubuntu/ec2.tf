@@ -19,13 +19,13 @@ data "aws_ami" "ubuntu" {
   }
 }
 
-data "aws_security_group" "default" {
-  name = "default"
+data "http" "ifconfig" {
+  url = "https://ifconfig.co"
 }
 
 resource "aws_instance" "ubuntu" {
   ami = "${data.aws_ami.ubuntu.image_id}"
-  vpc_security_group_ids = ["${data.aws_security_group.default.id}"]
+  vpc_security_group_ids = ["${aws_security_group.ubuntu.id}"]
   instance_type = "t2.micro"
   key_name = "default"
 
@@ -36,6 +36,25 @@ resource "aws_instance" "ubuntu" {
   }
   provisioner "remote-exec" {
     script = "./cloud-init.sh"
+  }
+}
+
+resource "aws_security_group" "ubuntu" {
+  name = "ubuntu"
+  description = "ubuntu"
+
+  ingress {
+    from_port = 22
+    to_port = 22
+    protocol = "tcp"
+    cidr_blocks = ["${chomp(data.http.ifconfig.body)}/32"]
+  }
+
+  egress {
+    from_port = 0
+    to_port = 0
+    protocol = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 }
 

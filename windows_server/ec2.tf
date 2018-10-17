@@ -19,15 +19,34 @@ data "aws_ami" "windows_server" {
   }
 }
 
-data "aws_security_group" "default" {
-  name = "default"
+data "http" "ifconfig" {
+  url = "https://ifconfig.co"
 }
 
 resource "aws_instance" "windows_server" {
   ami = "${data.aws_ami.windows_server.image_id}"
-  vpc_security_group_ids = ["${data.aws_security_group.default.id}"]
+  vpc_security_group_ids = ["${aws_security_group.windows_server.id}"]
   instance_type = "t2.medium"
   key_name = "default"
+}
+
+resource "aws_security_group" "windows_server" {
+  name = "windows_server"
+  description = "windows_server"
+
+  ingress {
+    from_port = 3389
+    to_port = 3389
+    protocol = "tcp"
+    cidr_blocks = ["${chomp(data.http.ifconfig.body)}/32"]
+  }
+
+  egress {
+    from_port = 0
+    to_port = 0
+    protocol = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 }
 
 output "instance_id" {
