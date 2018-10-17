@@ -19,6 +19,10 @@ data "aws_ami" "ubuntu" {
   }
 }
 
+data "http" "ifconfig" {
+  url = "https://ifconfig.co"
+}
+
 resource "aws_instance" "openvpn" {
   ami = "${data.aws_ami.ubuntu.image_id}"
   vpc_security_group_ids = ["${aws_security_group.openvpn.id}"]
@@ -50,14 +54,14 @@ resource "aws_security_group" "openvpn" {
     from_port = 22
     to_port = 22
     protocol = "tcp"
-    cidr_blocks = ["${var.client_ip}"]
+    cidr_blocks = ["${chomp(data.http.ifconfig.body)}/32"]
   }
 
   ingress {
     from_port = 1194
     to_port = 1194
     protocol = "udp"
-    cidr_blocks = ["${var.client_ip}"]
+    cidr_blocks = ["${chomp(data.http.ifconfig.body)}/32"]
   }
 
   egress {
