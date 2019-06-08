@@ -24,15 +24,16 @@ data "http" "ifconfig" {
 }
 
 resource "aws_instance" "ubuntu" {
-  ami = "${data.aws_ami.ubuntu.image_id}"
-  vpc_security_group_ids = ["${aws_security_group.ubuntu.id}"]
+  ami = data.aws_ami.ubuntu.image_id
+  vpc_security_group_ids = [aws_security_group.ubuntu.id]
   instance_type = "t2.micro"
   key_name = "default"
 
   connection {
+    host = self.public_ip
     type = "ssh"
     user = "ubuntu"
-    private_key = "${file("~/.ssh/aws_default")}"
+    private_key = file("~/.ssh/aws_default")
   }
   provisioner "remote-exec" {
     script = "./cloud-init.sh"

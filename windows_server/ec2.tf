@@ -24,8 +24,8 @@ data "http" "ifconfig" {
 }
 
 resource "aws_instance" "windows_server" {
-  ami = "${data.aws_ami.windows_server.image_id}"
-  vpc_security_group_ids = ["${aws_security_group.windows_server.id}"]
+  ami = data.aws_ami.windows_server.image_id
+  vpc_security_group_ids = [aws_security_group.windows_server.id]
   instance_type = "t2.medium"
   key_name = "default"
   get_password_data = true
@@ -51,9 +51,12 @@ resource "aws_security_group" "windows_server" {
 }
 
 output "server" {
-  value = "${aws_instance.windows_server.public_dns}"
+  value = aws_instance.windows_server.public_dns
 }
 
 output "password" {
-  value = "${rsadecrypt(aws_instance.windows_server.password_data, file("~/.ssh/aws_default"))}"
+  value = rsadecrypt(
+    aws_instance.windows_server.password_data,
+    file("~/.ssh/aws_default"),
+  )
 }

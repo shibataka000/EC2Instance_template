@@ -24,15 +24,16 @@ data "http" "ifconfig" {
 }
 
 resource "aws_instance" "openvpn" {
-  ami = "${data.aws_ami.ubuntu.image_id}"
-  vpc_security_group_ids = ["${aws_security_group.openvpn.id}"]
+  ami = data.aws_ami.ubuntu.image_id
+  vpc_security_group_ids = [aws_security_group.openvpn.id]
   instance_type = "t2.micro"
   key_name = "default"
 
   connection {
+    host = self.public_ip
     type = "ssh"
     user = "ubuntu"
-    private_key = "${file("${var.private_key}")}"
+    private_key = file(var.private_key)
   }
   provisioner "file" {
     source = "./server"
@@ -73,5 +74,5 @@ resource "aws_security_group" "openvpn" {
 }
 
 output "Gateway" {
-  value = "${aws_instance.openvpn.public_ip}"
+  value = aws_instance.openvpn.public_ip
 }
