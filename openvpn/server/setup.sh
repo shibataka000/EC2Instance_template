@@ -4,7 +4,7 @@ TEMPLATES=/home/ubuntu/openvpn
 
 # apt
 apt-get update
-apt-get install -y openvpn easy-rsa libssl-dev openssl
+DEBIAN_FRONTEND=noninteractive apt-get install -y openvpn easy-rsa libssl-dev openssl iptables-persistent
 
 # Server sertificate
 make-cadir /etc/openvpn/easy-rsa
@@ -25,6 +25,7 @@ service openvpn restart
 sed -ie "s/#net.ipv4.ip_forward=1/net.ipv4.ip_forward=1/" /etc/sysctl.conf
 sysctl -p
 iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o eth0 -j MASQUERADE
+/etc/init.d/iptables-persistent save
 
 # Client sertificate
 cd /etc/openvpn/easy-rsa

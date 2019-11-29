@@ -23,7 +23,7 @@ terraform apply
 Install some packages.
 
 ```
-sudo apt-get install network-manager-openvpn network-manager-openvpn-gnome 
+sudo apt-get install network-manager-openvpn network-manager-openvpn-gnome
 ```
 
 Select `VPN connection -> VPN setting -> Add -> Import VPN configuration` from network icon and select `client/client.conf`.
@@ -39,12 +39,6 @@ After disconnect to VPN server, you can terminate VPN server.
 ```
 terraform destroy
 ```
-
-### Note
-
-VPN server does'nt save iptables configuration.
-So you can't use VPN server after reboot VPN server.
-You should destroy and reconstruct VPN server everytime.
 
 ## Author
 

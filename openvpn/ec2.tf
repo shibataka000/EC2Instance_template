@@ -26,7 +26,7 @@ data "http" "ifconfig" {
 resource "aws_instance" "openvpn" {
   ami = data.aws_ami.ubuntu.image_id
   vpc_security_group_ids = [aws_security_group.openvpn.id]
-  instance_type = "t2.micro"
+  instance_type = "t3.micro"
   key_name = "default"
 
   connection {
@@ -44,6 +44,9 @@ resource "aws_instance" "openvpn" {
   }
   provisioner "local-exec" {
     command = "scp -i ${var.private_key} -o StrictHostKeyChecking=no ubuntu@${aws_instance.openvpn.public_ip}:/etc/openvpn/client/* ./client/"
+  }
+  tags = {
+    Name = "openvpn"
   }
 }
 
@@ -71,6 +74,11 @@ resource "aws_security_group" "openvpn" {
     protocol = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+}
+
+resource "aws_eip" "openvpn" {
+  instance = aws_instance.openvpn.id
+  vpc = true
 }
 
 output "Gateway" {
